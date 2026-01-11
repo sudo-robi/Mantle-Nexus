@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.10",
+    "ethers": "^6.16.0",
+    "react-icons": "^5.5.0",
+    "wagmi": "^2.19.5"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.23",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18"
+  }
+}

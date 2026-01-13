@@ -41,11 +41,10 @@ Traditional DeFi lending platforms rely on static LTVs and lack privacy-preservi
 
 | Contract                   | Address                                                                                           
 | -------------------------- | ------------------------------------------ 
+| `VAULT_ADDRESS`            | 0x40776dF7BB64828BfaFBE4cfacFECD80fED34266 
 | `USDT_ADDRESS`             | 0x915cC86fE0871835e750E93e025080FFf9927A3f 
-| `VAULT_ADDRESS`            | 0x61dAF0E077555362ea135C1C56c808aA8b0e71F8 
-| `INTEGRATOR_ADDRESS`       | 0xD168D3185E1A972b32719169e42Bb949De61B6d9 
+| `INTEGRATOR_ADDRESS`       | 0xAE95E2F4DBFa908fb88744C12325e5e44244b6B0 
 | `CREDIT_SCORE_ADDRESS`     | 0xf8f7EE86662e6eC391033EFcF4221057F723f9B1 
-| `INTEGRATOR_ADDRESS`       | 0x255C053490060Df61D374A42D95Fd570D25418a7
 
 **Gas and Payment Summary:**
 

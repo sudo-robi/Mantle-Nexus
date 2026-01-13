@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
-import {MCRWAVault} from "../src/MCRWAVault.sol";
+import {MCVault} from "../src/MCVault.sol";
 import {VaultIntegrator} from "../src/VaultIntegrator.sol";
 import {USDTMock} from "../src/USDTMock.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -23,6 +23,7 @@ contract VaultComposabilityTest is Test {
         integrator = new VaultIntegrator(address(vault), address(usdt));
         collateral = new USDTMock(); 
         vault.setERC20Price(address(collateral), 1); 
+        vault.addBorrowToken(address(usdt), 18);
         vm.stopPrank();
     }
 

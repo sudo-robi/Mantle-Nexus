@@ -1,20 +1,20 @@
-# MC-RWA Vault (MVP)
+# MC Vault (MVP)
 
 ## 1. Project Overview
 
-**MC-RWA Vault** is a **multi-collateral, on-chain lending system** that bridges **real-world assets (RWA/RealFi)** with DeFi.
+**MC Vault** is a **multi-collateral, on-chain lending system** that bridges **real-world assets (RWA/RealFi)** with DeFi.
 
 Users can deposit **ERC20 tokens** or **ERC721 NFTs** as collateral and borrow **USDT** based on **dynamic Loan-to-Value (LTV) scores** powered by **zero-knowledge attestations (ZK proofs)**.
 
 **Key Features:**
 
-* **RWA & RealFi integration:** Tokenized real-world assets as collateral
+* **RWA and RealFi integration:** Tokenized real-world assets as collateral
 * **DeFi composability:** Borrow stablecoins on-chain
 * **Privacy-first credit scoring:** ZK-powered dynamic LTV
 
 ## 2. Problem Statement
 Traditional DeFi lending platforms rely on static LTVs and lack privacy-preserving credit scoring. **MC-RWA Vault solves this by:**
-1. Providing **dynamic, ZK-powered LTVs**.
+1. Providing **dynamic, ZK-powered Loan-to-Values (LTVs)**.
 2. Supporting **multiple collateral types** (ERC20 + ERC721).
 3. Demonstrating **privacy-first credit scoring.** 
 
@@ -47,7 +47,7 @@ Traditional DeFi lending platforms rely on static LTVs and lack privacy-preservi
 | `CREDIT_SCORE_ADDRESS`     | 0xf8f7EE86662e6eC391033EFcF4221057F723f9B1 
 | `INTEGRATOR_ADDRESS`       | 0x255C053490060Df61D374A42D95Fd570D25418a7
 
-**Gas & Payment Summary:**
+**Gas and Payment Summary:**
 
 * Estimated total gas: ~11.8B
 * Paid in Mantle Sepolia: 0.2374 MNT
@@ -98,9 +98,158 @@ forge script script/Demo.s.sol \
 * **Liquidation Incentives:** Optional, for under-collateralized loans
 * **Future Revenue:** Tokenization partnerships for real-world assets
 
+## 8. Chainlink Oracle Integration 🔗
+
+**Real-time asset pricing with fallback support**
+
+The MC-RWA Vault now integrates with **Chainlink Data Feeds** for accurate, on-chain asset pricing with circuit-breaker fallback protection.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│          MC Vault (Price Queries)                   │
+└────────────────────┬────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│      ChainlinkPriceOracle (Event Emitter)           │
+│  ✓ Aggregator Registry                              │
+│  ✓ Fallback Price Circuit Breaker                   │
+│  ✓ Staleness Detection & Alerts                     │
+└────────────────────┬────────────────────────────────┘
+         ┌───────────┴───────────┐
+         ▼                       ▼
+┌──────────────────────┐  ┌────────────────────┐
+│ Chainlink Aggregator │  │ Fallback Price     │
+│ (1hr staleness TTL)  │  │ (Circuit Breaker)  │
+│ • ETH/USD            │  │ • USDT = $1.00     │
+│ • BTC/USD            │  │ • Custom Assets    │
+└──────────────────────┘  └────────────────────┘
+```
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **Multi-Source Pricing** | Register Chainlink aggregators for any ERC20 token |
+| **Staleness Detection** | Automatically detects when Chainlink feeds haven't updated (1hr TTL) |
+| **Fallback Mode** | Circuit-breaker fallback prices if feed becomes stale |
+| **Event Emission** | Emits events for monitoring: `PriceUpdated`, `PriceStalenessDetected`, `AggregatorRegistered` |
+| **View & Non-View API** | `getPriceUnsafeView()` for read-only calls, `getPriceUnsafe()` with event emission |
+
+### 9 Deployment and Setup
+
+**Deploy Oracle Contract**
+
+```bash
+export PRIVATE_KEY=0x...
+export RPC_URL=https://5003.rpc.thirdweb.com
+export USDT_ADDRESS=0x...
+export VAULT_ADDRESS=0x...
+
+# Run full orchestration (deploy + register + set fallback)
+./script/deploy-oracle-full.sh
+```
+
+**Register Chainlink Aggregators**
+
+```bash
+export ORACLE_ADDRESS=0x...
+
+./script/register-aggregators.sh \
+  0x...usdt_address 0x...chainlink_usdt_aggregator 8 \
+  0x...eth_address 0x...chainlink_eth_aggregator 8
+```
+
+**Verify Oracle Status**
+
+```bash
+# Monitor live events
+export ORACLE_ADDRESS=0x...
+./script/monitor-oracle.sh
+```
+
+### Multi-Token Repayment
+
+Users can now repay loans using **any allowed borrow token** instead of just USDT:
+
+**Frontend:**
+- Token selector in "Repay" tab
+- Oracle-based price conversion
+- Automatic debt calculation
+
+**Solidity:**
+```solidity
+// Repay with USDT (traditional)
+vault.repay(100e18);
+
+// Repay with any approved borrow token
+vault.repayWithBorrowToken(0x...token, 50e18);
+```
+
+**Events:**
+```solidity
+event RepaidWithBorrowToken(
+    address indexed user,
+    address indexed token,
+    uint256 amountToken,
+    uint256 amountUSDT
+);
+```
+
+### Monitoring & Alerts
+
+**On-Chain Events:**
+
+| Event | When | Use Case |
+|-------|------|----------|
+| `PriceUpdated` | Price fetched from Chainlink or fallback | Update UI, analytics |
+| `PriceStalenessDetected` | Feed hasn't updated in 1+ hours | Alert operators, trigger action |
+| `AggregatorRegistered` | New Chainlink feed registered | Audit trail |
+| `FallbackPriceUpdated` | Fallback price set/updated | Circuit breaker engagement |
+
+**Example Monitoring Script:**
+```bash
+# Watch for staleness alerts
+cast rpc eth_subscribeLogs \
+  --address "$ORACLE_ADDRESS" \
+  --topics "$(cast keccak 'PriceStalenessDetected(address,uint256,uint256)')"
+```
+
+### Testing
+
+**Staleness Detection Tests (5 new tests):**
+```bash
+forge test -k "Staleness"
+
+# Tests cover:
+# ✓ test_StalenessDetection: Verifies staleness flag after 1hr
+# ✓ test_FallbackPriceOnStaleness: Fallback activates when feed is stale
+# ✓ test_AggregatorRegistrationEvent: Events emitted on registration
+# ✓ test_PriceUpdateEmitsEvent: Price events logged
+# ✓ test_StalenessClearedWhenFeedUpdates: Recovery from staleness
+```
+
+**All 41 tests passing** 
+### CI/CD Integration
+
+**Automated smoke test:**
+```bash
+./script/ci-smoke-test.sh
+
+# Validates:
+# ✓ Contracts compile
+# ✓ All tests pass
+# ✓ Deployment scripts valid
+# ✓ Multi-token repay functions exist
+# ✓ Oracle integration verified
+```
+
 ---
 
-## 8. Compliance and Notes
+## 10. Compliance and Notes
+
 
 * MVP contains **mocked ZK attestations**
 * No regulated real-world assets are on-chain
@@ -119,21 +268,21 @@ forge script script/Demo.s.sol \
 | - Max Borrowable: $Y                   |
 +---------------------------------------+
 | Deposit Collateral                     |
-| [Select ERC20/ERC721] [Amount] [Deposit]|
+|[Select ERC20/ERC721] [Amount] [Deposit]|
 +---------------------------------------+
 | Borrow USDT                             |
 | [Amount] [Borrow]                       |
 | Current LTV: 50%                        |
 +---------------------------------------+
-| Update Credit Score (ZK)               |
-| [Update LTV]                             |
+| Update Credit Score (ZK)                |
+| [Update LTV]                            |
 +---------------------------------------+
 | Withdraw Collateral                     |
 | [Select Token/NFT] [Withdraw]           |
 +---------------------------------------+
 
 
-## 10. Security and UX Guardrails (Phase 1)
+## 11. Security and UX Guardrails (Phase 1)
 To ensure capital safety and a robust user experience, the following "Hardening" measures have been implemented:
 
 ### ✅ Frontend Safety Layers
@@ -153,7 +302,7 @@ To ensure capital safety and a robust user experience, the following "Hardening"
 - **Mocked Components:** ZK-attestations are currently mocked for demonstration purposes.
 - **Liquidation:** Users must monitor their LTV to prevent liquidation if collateral values fluctuate (future implementation).
 
-# MC-RWA Vault Security & Threat Model
+# MC Vault Security and Threat Model
 
 ### Composability
 - **Tokenized Receipts**: Deposits generate `mRWA-USDT`. While this allows for yield-bearing collateral, it introduces "Recursive Borrowing" risks if mRWA-USDT is accepted back into the vault as collateral.

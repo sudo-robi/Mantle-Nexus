@@ -5,25 +5,20 @@
   line-height: 1.5;
   font-weight: 400;
   color: white;
-  background-color: #030712; /* Deep Slate 950 */
+  background-color: #030712; 
   
-  /* Smooth rendering */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-/* 1. Reset Body for a Full-Screen Dashboard */
 body {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
-  overflow-x: hidden; /* Allows vertical scrolling if needed, prevents horizontal */
+  overflow-x: hidden; 
   background-color: #030712;
 }
-
-/* 2. Custom Glassmorphism Effect */
 .glass {
   background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(16px);
@@ -31,8 +26,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
 }
-
-/* 3. Button Reset (So Tailwind classes work better) */
 button {
   cursor: pointer;
   transition: all 0.2s ease-in-out;

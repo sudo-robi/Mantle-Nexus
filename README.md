@@ -6,6 +6,40 @@
 
 Users can deposit **ERC20 tokens** or **ERC721 NFTs** as collateral and borrow **USDT** based on **dynamic Loan-to-Value (LTV) scores** powered by **zero-knowledge attestations (ZK proofs)**.
 
+## Compliance declaration 
+
+The MC-RWA Vault (MVP) project is a technical prototype currently deployed on the Mantle Sepolia Testnet for experimental and educational purposes. At this stage:
+
+No regulated financial assets are involved in the live demonstration.
+The protocol uses mocked ZK-attestations and test tokens (e.g., USDTMock) to simulate RWA workflows.
+In a future production deployment, the architecture is designed to integrate with regulated RWA tokenization providers and mandatory KYC/AML identity layers to satisfy regional legal requirements.
+
+
+
+
+## One-Pager Pitch
+
+The Problem: The DeFi-RWA Friction
+DeFi lending is currently stuck in a cycle of extreme over-collateralization and privacy trade-offs. Borrowers cannot easily leverage Real-World Assets (RWA) because on-chain protocols lack the nuance to value off-chain creditworthiness without exposing sensitive personal data. This creates a barrier for institutional capital and limits the utility of tokenized RWAs in decentralized markets.
+
+ The Solution: MC-RWA Vault
+MC-RWA Vault is a multi-collateral lending engine on Mantle that bridges the gap between RealFi and DeFi. It enables users to deposit tokenized RWAs (ERC20/ERC721) and borrow stablecoins against them using ZK-powered dynamic LTVs.
+
+Privacy-First Credit: Leveraging Zero-Knowledge proofs to update credit scores off-chain and attest to them on-chain without revealing underlying data.
+Dynamic Leverage: Rewards reliable borrowers with higher LTV ratios based on their ZK-verified financial health.
+Multi-Token Repayment: Seamlessly repay loans using any approved token, powered by protected on-chain oracles.
+ 
+Business Model
+Borrowing Fees: A transparent, protocol-level fee on all issued loans.
+Liquidation Incentives: Capturing a portion of internal liquidation spreads to ensure protocol solvency.
+Enterprise API: Providing white-label "Vault-as-a-Service" for institutional RWA originators looking to bring liquidity to their tokenized assets.
+
+Roadmap
+Q1 2026 (Current): Full MVP deployment on Mantle Sepolia with multi-token repayment and oracle-fallback systems.
+Q2 2026: Migration from mocked attestations to real ZK-identity providers and a comprehensive smart contract security audit.
+Q3 2026: Strategic partnership pilot with a tokenized bond or real-estate provider for real-asset integration.
+Q4 2026: Mainnet launch and expansion of the "Mantle-Nexus" ecosystem for cross-chain RWA liquidity.
+
 **Key Features:**
 
 * **RWA and RealFi integration:** Tokenized real-world assets as collateral
@@ -147,7 +181,6 @@ export RPC_URL=https://5003.rpc.thirdweb.com
 export USDT_ADDRESS=0x...
 export VAULT_ADDRESS=0x...
 
-# Run full orchestration (deploy + register + set fallback)
 ./script/deploy-oracle-full.sh
 ```
 

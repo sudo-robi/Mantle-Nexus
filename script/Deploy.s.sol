@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import "forge-std/Script.sol";
 import "../src/CreditScore.sol";
 import "../src/ZKAttestationUpdaterMock.sol";
-import "../src/MCRWAVault.sol";
+import "../src/MCVault.sol";
 import "../src/VaultIntegrator.sol";
 
 contract Deploy is Script {

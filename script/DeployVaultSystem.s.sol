@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Script, console} from "forge-std/Script.sol";
-import {MCRWAVault} from "../src/MCRWAVault.sol";
+import {MCVault} from "../src/MCVault.sol";
 import {VaultIntegrator} from "../src/VaultIntegrator.sol";
 import {USDTMock} from "../src/USDTMock.sol";
 

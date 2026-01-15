@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "forge-std/Script.sol";
 import "../src/PriceOracle.sol";
-import "../src/MCRWAVault.sol";
+import "../src/MCVault.sol";
 
 contract DeployOracle is Script {
     function run() external {

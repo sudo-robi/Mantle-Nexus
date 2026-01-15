@@ -22,7 +22,7 @@ In a future production deployment, the architecture is designed to integrate wit
 The Problem: The DeFi-RWA Friction
 DeFi lending is currently stuck in a cycle of extreme over-collateralization and privacy trade-offs. Borrowers cannot easily leverage Real-World Assets (RWA) because on-chain protocols lack the nuance to value off-chain creditworthiness without exposing sensitive personal data. This creates a barrier for institutional capital and limits the utility of tokenized RWAs in decentralized markets.
 
- The Solution: MC-RWA Vault
+ The Solution: MC Vault
 MC-RWA Vault is a multi-collateral lending engine on Mantle that bridges the gap between RealFi and DeFi. It enables users to deposit tokenized RWAs (ERC20/ERC721) and borrow stablecoins against them using ZK-powered dynamic LTVs.
 
 Privacy-First Credit: Leveraging Zero-Knowledge proofs to update credit scores off-chain and attest to them on-chain without revealing underlying data.
